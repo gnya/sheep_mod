@@ -1,0 +1,33 @@
+# ref: https://docs.minecraftforge.net/en/latest/gettingstarted/modfiles/#modstoml
+
+modLoader="javafml"
+loaderVersion="[64,)"
+license="MIT"
+issueTrackerURL="https://github.com/gnya/sheep_mod/issues"
+clientSideOnly=false
+
+[[mods]]
+modId="sheep_mod"
+version="0.0.1"
+displayName="Sheep Mod"
+#updateJSONURL="https://example.com/updates.json" #TODO
+displayURL="https://github.com/gnya/sheep_mod/"
+#logoFile="examplemod.png" #TODO
+authors="gnya"
+displayTest="MATCH_VERSION"
+
+description='''羊の上で眠れるようになります'''
+
+[[dependencies.examplemod]]
+    modId="forge"
+    mandatory=true
+    versionRange="[64,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.examplemod]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[26.1.2,26.2,)"
+    ordering="NONE"
+    side="BOTH"

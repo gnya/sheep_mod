@@ -1,0 +1,49 @@
+// ref: https://github.com/MinecraftForge/MDKExamples
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'eclipse'
+    id 'net.minecraftforge.gradle' version '[7.0.17,8)'
+}
+
+version = '0.0.1'
+group = 'io.github.gnya.sheep_mod'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+minecraft {
+    runs {
+        configureEach {
+            workingDir = layout.projectDirectory.dir('run')
+
+            systemProperty 'eventbus.api.strictRuntimeChecks', 'true'
+            systemProperty 'forge.enabledGameTestNamespaces', 'sheep_mod'
+        }
+
+        register('client')
+
+        register('server') {
+            args '--nogui'
+        }
+
+        register('gameTestServer')
+    }
+}
+
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenCentral()
+}
+
+dependencies {
+    implementation minecraft.dependency('net.minecraftforge:forge:26.1.2-64.0.6')
+    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.1'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    // UTF-8を使用する（Java 18+ では不要らしいですが、念の為設定しています）
+    options.encoding = 'UTF-8'
+}
