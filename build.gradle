@@ -19,6 +19,8 @@ minecraft {
 
             systemProperty 'eventbus.api.strictRuntimeChecks', 'true'
             systemProperty 'forge.enabledGameTestNamespaces', 'sheep_mod'
+
+            args "--mixin.config=sheep_mod.mixins.json"
         }
 
         register('client')
@@ -46,4 +48,10 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
     // UTF-8を使用する（Java 18+ では不要らしいですが、念の為設定しています）
     options.encoding = 'UTF-8'
+}
+
+tasks.named("jar", Jar) {
+    manifest {
+        attributes["MixinConfigs"] = "sheep_mod.mixins.json"
+    }
 }
