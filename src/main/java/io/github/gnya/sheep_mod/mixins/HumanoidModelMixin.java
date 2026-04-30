@@ -1,6 +1,6 @@
 package io.github.gnya.sheep_mod.mixins;
 
-import io.github.gnya.sheep_mod.api.IHumanoidRenderStateMixin;
+import io.github.gnya.sheep_mod.api.ILivingEntityRenderStateMixin;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HumanoidModel.class)
-public class HumanoidModelMixin {
+public abstract class HumanoidModelMixin {
     @Shadow
     @Final
     public ModelPart rightArm;
@@ -28,15 +28,15 @@ public class HumanoidModelMixin {
     public ModelPart leftLeg;
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At("TAIL"))
-    public void setupAnim(final HumanoidRenderState state, CallbackInfo info) {
+    public void setupAnim(final HumanoidRenderState state, CallbackInfo ci) {
         float animationPos = state.walkAnimationPos;
         float animationSpeed = state.walkAnimationSpeed;
 
-        if (!(state instanceof IHumanoidRenderStateMixin customState)) {
+        if (!(state instanceof ILivingEntityRenderStateMixin customState)) {
             return;
         }
 
-        if (customState.sheep_mod$isSleepingOnSheep()) {
+        if (customState.isSleepingOnSheep()) {
             // 姿勢を上書きする
             this.rightArm.xRot = Mth.cos(
                     animationPos * 0.6662F + (float) Math.PI) * 2.0F * animationSpeed * 0.5F / state.speedValue;
