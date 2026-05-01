@@ -4,10 +4,11 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "HumanoidModelMixin",
-    "LivingEntityRenderStateMixin",
     "LivingEntityRendererMixin",
+    "LivingEntityRenderStateMixin",
     "sheep.SheepMixin",
-    "sheep.SheepRenderStateMixin",
-    "sheep.SheepRendererMixin"
+    "sheep.SheepRendererMixin",
+    "LivingEntityMixin",
+    "PlayerMixin"
   ]
 }

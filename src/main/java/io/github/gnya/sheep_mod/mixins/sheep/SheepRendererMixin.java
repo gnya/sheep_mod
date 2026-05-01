@@ -1,7 +1,6 @@
 package io.github.gnya.sheep_mod.mixins.sheep;
 
 import io.github.gnya.sheep_mod.api.ISheepMixin;
-import io.github.gnya.sheep_mod.api.ISheepRenderStateMixin;
 import net.minecraft.client.renderer.entity.SheepRenderer;
 import net.minecraft.client.renderer.entity.state.SheepRenderState;
 import net.minecraft.world.entity.animal.sheep.Sheep;
@@ -19,8 +18,6 @@ public class SheepRendererMixin {
     )
     public void extractRenderState(Sheep entity, SheepRenderState state, float partialTicks, CallbackInfo ci) {
         if (((ISheepMixin) entity).isHappy()) {
-            ((ISheepRenderStateMixin) state).setHappy(true);
-
             // TODO デバッグのためHappyな羊の色がオレンジで表示されるようにします
             state.woolColor = DyeColor.ORANGE;
         } else {

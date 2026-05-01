@@ -36,7 +36,7 @@ public abstract class HumanoidModelMixin {
             return;
         }
 
-        if (customState.isSleepingOnSheep()) {
+        if (customState.isSleepingInSheep()) {
             // 姿勢を上書きする
             this.rightArm.xRot = Mth.cos(
                     animationPos * 0.6662F + (float) Math.PI) * 2.0F * animationSpeed * 0.5F / state.speedValue;

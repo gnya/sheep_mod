@@ -1,0 +1,104 @@
+package io.github.gnya.sheep_mod.mixins;
+
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import io.github.gnya.sheep_mod.SheepMod;
+import io.github.gnya.sheep_mod.api.ILivingEntityMixin;
+import io.github.gnya.sheep_mod.api.ISheepMixin;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.animal.sheep.Sheep;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.NonNull;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(LivingEntity.class)
+@Implements(@Interface(iface = ILivingEntityMixin.class, prefix = "sheep_mod$"))
+public abstract class LivingEntityMixin extends Entity {
+    @Unique
+    private static final EntityDataAccessor<Boolean> DATA_SLEEP_IN_SHEEP = SynchedEntityData.defineId(
+            LivingEntityMixin.class, EntityDataSerializers.BOOLEAN);
+
+    private LivingEntityMixin(EntityType<?> type, Level level) {
+        // Entityのメンバを使うためのダミーのコンストラクタです
+        super(type, level);
+    }
+
+    public boolean sheep_mod$isSleepInSheep() {
+        return this.entityData.get(DATA_SLEEP_IN_SHEEP);
+    }
+
+    @ModifyReturnValue(method = "checkBedExists", at = @At("RETURN"))
+    private boolean modifyCheckBedExists(boolean exists) {
+        if (this.sheep_mod$isSleepInSheep()) {
+            // TODO getBedSheep()を追加する
+            Entity vehicle = this.getVehicle();
+
+            return vehicle instanceof Sheep sheep && ((ISheepMixin) sheep).canSleepIn();
+        } else {
+            return exists;
+        }
+    }
+
+    @ModifyReturnValue(method = "isSleeping", at = @At("RETURN"))
+    public boolean modifyIsSleeping(boolean sleep) {
+        return sleep || this.sheep_mod$isSleepInSheep();
+    }
+
+    @Inject(method = "stopSleeping", at = @At("HEAD"), cancellable = true)
+    public void stopSleeping(CallbackInfo ci) {
+        if (!this.sheep_mod$isSleepInSheep()) {
+            return;
+        }
+
+        this.stopRiding();
+        this.setPose(Pose.STANDING);
+        // TODO this.setPos(pos.x, pos.y, pos.z);
+        this.entityData.set(DATA_SLEEP_IN_SHEEP, false);
+        SheepMod.LOGGER.info("STOP SLEEP");
+
+        ci.cancel();
+    }
+
+    public boolean sheep_mod$startSleeping(final @NonNull Sheep sheep) {
+        if (!((ISheepMixin) sheep).canSleepIn()) {
+            return false;
+        } else if (!this.startRiding(sheep)) {
+            return false;
+        }
+
+        this.setPose(Pose.SLEEPING);
+        // TODO this.setPos(bedPosition.getX() + 0.5, bedPosition.getY() + 0.6875, bedPosition.getZ() + 0.5);
+        this.entityData.set(DATA_SLEEP_IN_SHEEP, true);
+        this.setDeltaMovement(Vec3.ZERO);
+        this.needsSync = true;
+        SheepMod.LOGGER.info("START SLEEP");
+
+        return true;
+    }
+
+    @Inject(method = "defineSynchedData", at = @At("TAIL"))
+    protected void defineSynchedDataMixin(SynchedEntityData.Builder entityData, CallbackInfo ci) {
+        entityData.define(DATA_SLEEP_IN_SHEEP, false);
+    }
+
+    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
+    protected void addAdditionalSaveDataMixin(ValueOutput output, CallbackInfo ci) {
+        output.putBoolean("SleepInSheep", this.sheep_mod$isSleepInSheep());
+    }
+
+    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+    protected void readAdditionalSaveDataMixin(ValueInput input, CallbackInfo ci) {
+        this.entityData.set(DATA_SLEEP_IN_SHEEP, input.getBooleanOr("SleepInSheep", false));
+    }
+}

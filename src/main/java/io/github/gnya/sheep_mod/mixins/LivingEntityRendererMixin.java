@@ -2,10 +2,12 @@ package io.github.gnya.sheep_mod.mixins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import io.github.gnya.sheep_mod.api.ILivingEntityMixin;
 import io.github.gnya.sheep_mod.api.ILivingEntityRenderStateMixin;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.sheep.Sheep;
@@ -25,7 +27,7 @@ public abstract class LivingEntityRendererMixin {
             return;
         }
 
-        if (!customState.isSleepingOnSheep()) {
+        if (!customState.isSleepingInSheep()) {
             return;
         }
 
@@ -49,7 +51,7 @@ public abstract class LivingEntityRendererMixin {
             poseStack.mulPose(Axis.YP.rotationDegrees(-angle));
         }
 
-        float sheepAngle = customState.getVehicleSheepYRot() - 90F;
+        float sheepAngle = customState.getBedSheepYRot() - 90F;
 
         // 正しいangleを計算して再び回転させる
         poseStack.mulPose(Axis.YP.rotationDegrees(-sheepAngle));
@@ -65,24 +67,25 @@ public abstract class LivingEntityRendererMixin {
             final LivingEntity entity, final LivingEntityRenderState state, final float partialTicks,
             CallbackInfo ci
     ) {
+        if (!((ILivingEntityMixin) entity).isSleepInSheep()) {
+            return;
+        }
+
         if (!(state instanceof ILivingEntityRenderStateMixin customState)) {
             return;
         }
 
-        if (!entity.isPassenger()) {
-            return;
-        }
+        // TODO getBedSheep()を追加する
+        Entity vehicle = entity.getVehicle();
 
-        if (!(entity.getVehicle() instanceof Sheep vehicle)) {
+        if (!(vehicle instanceof Sheep)) {
             return;
         }
 
         float angle = vehicle.getPreciseBodyRotation(partialTicks);
 
-        // 現状、ひとまず羊の上に乗ってさえいればtrueにする
-        // TODO 羊の上に乗った状態と羊の上に寝ている状態を区別する
-        customState.setSleepingOnSheep(true);
-        customState.setVehicleSheepYRot(angle);
+        customState.setSleepingInSheep(true);
+        customState.setBedSheepYRot(angle);
 
         // 身体の向きを動かさない
         state.bodyRot = 180.0F;

@@ -16,19 +16,19 @@ public abstract class LivingEntityRenderStateMixin {
     @Unique
     private float sheep_mod$vehicleSheepYRot;
 
-    public boolean sheep_mod$isSleepingOnSheep() {
+    public boolean sheep_mod$isSleepingInSheep() {
         return this.sheep_mod$isSleepingOnSheep;
     }
 
-    public void sheep_mod$setSleepingOnSheep(boolean value) {
+    public void sheep_mod$setSleepingInSheep(final boolean value) {
         this.sheep_mod$isSleepingOnSheep = value;
     }
 
-    public float sheep_mod$getVehicleSheepYRot() {
+    public float sheep_mod$getBedSheepYRot() {
         return this.sheep_mod$vehicleSheepYRot;
     }
 
-    public void sheep_mod$setVehicleSheepYRot(float value) {
+    public void sheep_mod$setBedSheepYRot(final float value) {
         this.sheep_mod$vehicleSheepYRot = value;
     }
 }
