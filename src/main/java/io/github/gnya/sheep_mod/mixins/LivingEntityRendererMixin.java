@@ -2,7 +2,7 @@ package io.github.gnya.sheep_mod.mixins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import io.github.gnya.sheep_mod.api.ILivingEntityMixin;
+import io.github.gnya.sheep_mod.api.SheepSleeper;
 import io.github.gnya.sheep_mod.api.ILivingEntityRenderStateMixin;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
@@ -67,7 +67,7 @@ public abstract class LivingEntityRendererMixin {
             final LivingEntity entity, final LivingEntityRenderState state, final float partialTicks,
             CallbackInfo ci
     ) {
-        if (!((ILivingEntityMixin) entity).isSleepInSheep()) {
+        if (!((SheepSleeper) entity).isSleepInSheep()) {
             return;
         }
 

@@ -8,10 +8,12 @@
     "gui.ClientboundSetPassengersPacketMixin",
     "sheep.SheepMixin",
     "sheep.SheepRendererMixin",
+    "sleeper.LivingEntityMixin",
+    "sleeper.LivingEntityMixin$EntityAccessor",
+    "sleeper.PlayerMixin",
+    "sleeper.ServerPlayerMixin",
     "HumanoidModelMixin",
     "LivingEntityRendererMixin",
-    "LivingEntityRenderStateMixin",
-    "LivingEntityMixin",
-    "PlayerMixin"
+    "LivingEntityRenderStateMixin"
   ]
 }

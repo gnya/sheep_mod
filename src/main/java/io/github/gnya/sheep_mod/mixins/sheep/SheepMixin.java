@@ -57,13 +57,13 @@ public abstract class SheepMixin extends LivingEntity {
     private static final EntityDataAccessor<Boolean> DATA_HAPPY = SynchedEntityData.defineId(
             SheepMixin.class, EntityDataSerializers.BOOLEAN);
 
-    @Shadow
-    public abstract boolean isSheared();
-
     private SheepMixin(EntityType<? extends LivingEntity> type, Level level) {
         // ダミーコンストラクタ
         super(type, level);
     }
+
+    @Shadow
+    public abstract boolean isSheared();
 
     @Unique
     private void private$setHappySheepHealth(boolean happy, boolean lastHappy) {

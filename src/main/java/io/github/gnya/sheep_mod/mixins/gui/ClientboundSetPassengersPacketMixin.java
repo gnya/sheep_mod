@@ -2,7 +2,7 @@ package io.github.gnya.sheep_mod.mixins.gui;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.gnya.sheep_mod.api.IClientboundSetPassengersPacketMixin;
-import io.github.gnya.sheep_mod.api.ILivingEntityMixin;
+import io.github.gnya.sheep_mod.api.SheepSleeper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.world.entity.Entity;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Mixin(ClientboundSetPassengersPacket.class)
 @Implements(@Interface(iface = IClientboundSetPassengersPacketMixin.class, prefix = "sheep_mod$"))
-public class ClientboundSetPassengersPacketMixin {
+public abstract class ClientboundSetPassengersPacketMixin {
     @Unique
     private BitSet sheep_mod$isSleepInSheep;
 
@@ -29,7 +29,7 @@ public class ClientboundSetPassengersPacketMixin {
 
         for (int i = 0; i < entities.size(); i++) {
             Entity passenger = entities.get(i);
-            boolean isSleepInSheep = passenger instanceof ILivingEntityMixin && ((ILivingEntityMixin) passenger).isSleepInSheep();
+            boolean isSleepInSheep = passenger instanceof SheepSleeper && ((SheepSleeper) passenger).isSleepInSheep();
 
             this.sheep_mod$isSleepInSheep.set(i, isSleepInSheep);
         }

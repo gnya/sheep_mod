@@ -1,8 +1,8 @@
 package io.github.gnya.sheep_mod;
 
 import com.mojang.logging.LogUtils;
-import io.github.gnya.sheep_mod.api.ILivingEntityMixin;
-import io.github.gnya.sheep_mod.api.IPlayerMixin;
+import io.github.gnya.sheep_mod.api.SheepSleeper;
+import io.github.gnya.sheep_mod.api.PlayableSheepSleeper;
 import io.github.gnya.sheep_mod.api.ISheepMixin;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -31,8 +31,8 @@ public class SheepMod {
         // TODO 動いてる？
         LivingEntity entity = event.getEntity();
 
-        if (entity instanceof ILivingEntityMixin) {
-            if (((ILivingEntityMixin) entity).isSleepInSheep()) {
+        if (entity instanceof SheepSleeper) {
+            if (((SheepSleeper) entity).isSleepInSheep()) {
                 // TODO getBedSheep()を追加する
                 Entity vehicle = entity.getVehicle();
 
@@ -67,6 +67,6 @@ public class SheepMod {
         }
 
         // プレイヤーを羊の上に寝かせる
-        ((IPlayerMixin) player).startSleepInBed((Sheep) sheep);
+        ((PlayableSheepSleeper) player).startSleepInBed((Sheep) sheep);
     }
 }

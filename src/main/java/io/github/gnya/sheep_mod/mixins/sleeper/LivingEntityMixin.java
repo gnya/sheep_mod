@@ -1,8 +1,8 @@
-package io.github.gnya.sheep_mod.mixins;
+package io.github.gnya.sheep_mod.mixins.sleeper;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.gnya.sheep_mod.SheepMod;
-import io.github.gnya.sheep_mod.api.ILivingEntityMixin;
+import io.github.gnya.sheep_mod.api.SheepSleeper;
 import io.github.gnya.sheep_mod.api.ISheepMixin;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -16,14 +16,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
-@Implements(@Interface(iface = ILivingEntityMixin.class, prefix = "sheep_mod$"))
+@Implements(@Interface(iface = SheepSleeper.class, prefix = "sheep_mod$"))
 public abstract class LivingEntityMixin extends Entity {
     @Unique
     private static final EntityDataAccessor<Boolean> DATA_SLEEP_IN_SHEEP = SynchedEntityData.defineId(
@@ -32,6 +33,15 @@ public abstract class LivingEntityMixin extends Entity {
     private LivingEntityMixin(EntityType<?> type, Level level) {
         // ダミーコンストラクタ
         super(type, level);
+    }
+
+    @Mixin(Entity.class)
+    public interface EntityAccessor {
+        @Accessor("vehicle")
+        void setVehicle(final Entity vehicle);
+
+        @Invoker("addPassenger")
+        void callAddPassenger(final Entity passenger);
     }
 
     @Shadow
@@ -58,7 +68,11 @@ public abstract class LivingEntityMixin extends Entity {
         return sleep || this.sheep_mod$isSleepInSheep();
     }
 
-    public void sheep_mod$startSleeping(final @NonNull Sheep sheep) {
+    public void sheep_mod$startSleeping(final Sheep sheep) {
+        this.sheep_mod$LivingEntity$startSleeping(sheep);
+    }
+
+    public void sheep_mod$LivingEntity$startSleeping(final Sheep sheep) {
         if (!((ISheepMixin) sheep).canSleepIn()) {
             return;
         } else if (this.sheep_mod$isSleepInSheep()) {
@@ -77,9 +91,9 @@ public abstract class LivingEntityMixin extends Entity {
         // TODO this.setPos(bedPosition.getX() + 0.5, bedPosition.getY() + 0.6875, bedPosition.getZ() + 0.5);
         this.entityData.set(DATA_SLEEP_IN_SHEEP, true);
         this.setDeltaMovement(Vec3.ZERO);
+        ((EntityAccessor) this).setVehicle(sheep);
+        ((EntityAccessor) sheep).callAddPassenger(this);
         this.needsSync = true;
-        // TODO 失敗する可能性があるので修正する
-        this.startRiding(sheep, false, false);
 
         SheepMod.LOGGER.info("START SLEEP");
     }
@@ -94,9 +108,10 @@ public abstract class LivingEntityMixin extends Entity {
         this.setPose(Pose.STANDING);
         // TODO this.setPos(pos.x, pos.y, pos.z);
         this.entityData.set(DATA_SLEEP_IN_SHEEP, false);
-        SheepMod.LOGGER.info("STOP SLEEP");
-
         ci.cancel();
+
+        // TODO stopが2回呼ばれているのが気になる
+        SheepMod.LOGGER.info("STOP SLEEP");
     }
 
     @Inject(method = "defineSynchedData", at = @At("TAIL"))

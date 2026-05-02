@@ -23,12 +23,15 @@
 
 #### Player側の実装
 
-- [x] PlayerにSleepInBed(Sheep)を追加
-- [ ] ServerPlayerにSleepInBed(Sheep)を追加
-- [ ] 寝ている際のカメラの位置を調整する
+- [x] LivingEntityに状態SleepInSheepを追加する
+- [x] LivingEntityのstartSleeping/stopSleepingを羊に対応させる
+- [x] ServerPlayerのstartSleeping/stopSleepingを羊に対応させる
+- [x] PlayerのstartSleepInBed/stopSleepInBedを羊に対応させる
+- [ ] ServerPlayerのstartSleepInBed/stopSleepInBedを羊に対応させる
+- [ ] どこで寝ているか見えないので寝ている際のカメラの位置を調整する
+- [ ] 寝ている際のプレイヤーの位置がおかしい
 - [ ] 寝ている際のプレイヤーの当たり判定がおかしい
 - [ ] オフセットの値を乗る側のEntityが指定する
-- [x] LivingEntityに状態SleepInSheepを追加する
 - [ ] プレイヤーが羊の上で寝ると夜を明かせるようにする
 - [ ] 近くに敵がいる場合は眠れないようにする
 - [ ] 誰かが既に寝ている場合は眠れないようにする
