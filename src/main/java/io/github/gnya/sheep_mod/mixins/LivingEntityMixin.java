@@ -30,9 +30,12 @@ public abstract class LivingEntityMixin extends Entity {
             LivingEntityMixin.class, EntityDataSerializers.BOOLEAN);
 
     private LivingEntityMixin(EntityType<?> type, Level level) {
-        // Entityのメンバを使うためのダミーのコンストラクタです
+        // ダミーコンストラクタ
         super(type, level);
     }
+
+    @Shadow
+    public abstract void stopRiding();
 
     public boolean sheep_mod$isSleepInSheep() {
         return this.entityData.get(DATA_SLEEP_IN_SHEEP);
@@ -55,6 +58,32 @@ public abstract class LivingEntityMixin extends Entity {
         return sleep || this.sheep_mod$isSleepInSheep();
     }
 
+    public void sheep_mod$startSleeping(final @NonNull Sheep sheep) {
+        if (!((ISheepMixin) sheep).canSleepIn()) {
+            return;
+        } else if (this.sheep_mod$isSleepInSheep()) {
+            return;
+        } else if (!this.canRide(sheep)) {
+            return;
+        } else if (!sheep.getPassengers().isEmpty()) {
+            return;
+        }
+
+        if (this.isPassenger()) {
+            this.stopRiding();
+        }
+
+        this.setPose(Pose.SLEEPING);
+        // TODO this.setPos(bedPosition.getX() + 0.5, bedPosition.getY() + 0.6875, bedPosition.getZ() + 0.5);
+        this.entityData.set(DATA_SLEEP_IN_SHEEP, true);
+        this.setDeltaMovement(Vec3.ZERO);
+        this.needsSync = true;
+        // TODO 失敗する可能性があるので修正する
+        this.startRiding(sheep, false, false);
+
+        SheepMod.LOGGER.info("START SLEEP");
+    }
+
     @Inject(method = "stopSleeping", at = @At("HEAD"), cancellable = true)
     public void stopSleeping(CallbackInfo ci) {
         if (!this.sheep_mod$isSleepInSheep()) {
@@ -68,23 +97,6 @@ public abstract class LivingEntityMixin extends Entity {
         SheepMod.LOGGER.info("STOP SLEEP");
 
         ci.cancel();
-    }
-
-    public boolean sheep_mod$startSleeping(final @NonNull Sheep sheep) {
-        if (!((ISheepMixin) sheep).canSleepIn()) {
-            return false;
-        } else if (!this.startRiding(sheep)) {
-            return false;
-        }
-
-        this.setPose(Pose.SLEEPING);
-        // TODO this.setPos(bedPosition.getX() + 0.5, bedPosition.getY() + 0.6875, bedPosition.getZ() + 0.5);
-        this.entityData.set(DATA_SLEEP_IN_SHEEP, true);
-        this.setDeltaMovement(Vec3.ZERO);
-        this.needsSync = true;
-        SheepMod.LOGGER.info("START SLEEP");
-
-        return true;
     }
 
     @Inject(method = "defineSynchedData", at = @At("TAIL"))

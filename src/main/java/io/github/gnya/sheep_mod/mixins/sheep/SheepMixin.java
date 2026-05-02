@@ -61,7 +61,7 @@ public abstract class SheepMixin extends LivingEntity {
     public abstract boolean isSheared();
 
     private SheepMixin(EntityType<? extends LivingEntity> type, Level level) {
-        // LivingEntityのメンバを使うためのダミーのコンストラクタです
+        // ダミーコンストラクタ
         super(type, level);
     }
 

@@ -22,7 +22,7 @@ public abstract class PlayerMixin extends Avatar {
     private int sleepCounter;
 
     protected PlayerMixin(EntityType<? extends LivingEntity> type, Level level) {
-        // Avatarのメンバを使うためのダミーのコンストラクタです
+        // ダミーコンストラクタ
         super(type, level);
     }
 

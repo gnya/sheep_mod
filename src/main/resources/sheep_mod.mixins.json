@@ -3,11 +3,14 @@
   "package": "io.github.gnya.sheep_mod.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "gui.GuiMixin",
+    "gui.ClientPacketListenerMixin",
+    "gui.ClientboundSetPassengersPacketMixin",
+    "sheep.SheepMixin",
+    "sheep.SheepRendererMixin",
     "HumanoidModelMixin",
     "LivingEntityRendererMixin",
     "LivingEntityRenderStateMixin",
-    "sheep.SheepMixin",
-    "sheep.SheepRendererMixin",
     "LivingEntityMixin",
     "PlayerMixin"
   ]

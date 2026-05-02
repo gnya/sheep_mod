@@ -6,5 +6,5 @@ import org.jspecify.annotations.NonNull;
 public interface ILivingEntityMixin {
     boolean isSleepInSheep();
 
-    boolean startSleeping(final @NonNull Sheep sheep);
+    void startSleeping(final @NonNull Sheep sheep);
 }
