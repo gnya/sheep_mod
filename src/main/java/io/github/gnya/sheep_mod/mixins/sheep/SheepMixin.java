@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.gnya.sheep_mod.SheepMod;
 import io.github.gnya.sheep_mod.api.ISheepMixin;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -63,6 +65,9 @@ public abstract class SheepMixin extends LivingEntity {
 
     @Shadow
     public abstract boolean isSheared();
+
+    @Shadow
+    public abstract DyeColor getColor();
 
     @Unique
     private void private$setHappySheepHealth(boolean happy, boolean lastHappy) {
@@ -134,6 +139,23 @@ public abstract class SheepMixin extends LivingEntity {
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     protected void readAdditionalSaveDataMixin(ValueInput input, CallbackInfo ci) {
         this.sheep_mod$setHappy(input.getBooleanOr("Happy", false));
+    }
+
+    @Inject(method = "aiStep", at = @At("HEAD"))
+    public void aiStep(CallbackInfo ci) {
+        if (this.level().isClientSide() && this.sheep_mod$isHappy() && !this.isSheared()) {
+            // Happyな羊からパーティクルを出す
+            this.level()
+                    .addParticle(
+                            new DustParticleOptions(this.getColor().getTextureDiffuseColor(), 1.0F),
+                            this.getRandomX(0.7),
+                            this.getRandomY(),
+                            this.getRandomZ(0.7),
+                            0.0,
+                            0.0,
+                            0.0
+                    );
+        }
     }
 
     @Override

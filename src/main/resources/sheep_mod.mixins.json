@@ -7,7 +7,7 @@
     "gui.ClientPacketListenerMixin",
     "gui.ClientboundSetPassengersPacketMixin",
     "sheep.SheepMixin",
-    "sheep.SheepRendererMixin",
+    "sheep.EatBlockGoalMixin",
     "sleeper.LivingEntityMixin",
     "sleeper.LivingEntityMixin$EntityAccessor",
     "sleeper.PlayerMixin",
