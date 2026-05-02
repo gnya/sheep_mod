@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.gnya.sheep_mod.SheepMod;
 import io.github.gnya.sheep_mod.api.ISheepMixin;
+import io.github.gnya.sheep_mod.api.SheepSleeper;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -139,8 +140,8 @@ public abstract class SheepMixin extends LivingEntity {
 
     @Override
     public @NonNull Vec3 getPassengerRidingPosition(final @NonNull Entity passenger) {
-        // TODO ここでcanSleepInを使ってるのは変（乗っている側がオフセットを決めるべき）
-        if (this.sheep_mod$canSleepIn()) {
+        // TODO 乗っている側がオフセットを決めるべき
+        if (passenger instanceof SheepSleeper && ((SheepSleeper) passenger).isSleepInSheep()) {
             // Happyな羊の場合は乗る位置をずらす
             Vec3 offset = Vec3.ZERO;
             float zOffset = -0.5F;

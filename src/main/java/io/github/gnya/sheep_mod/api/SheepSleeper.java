@@ -7,5 +7,9 @@ public interface SheepSleeper {
 
     void startSleeping(final Sheep sheep);
 
+    // mixinではsuperが使えないので継承先ごとにメソッドを用意する
     void LivingEntity$startSleeping(final Sheep sheep);
+
+    // mixinではsuperが使えないので継承先ごとにメソッドを用意する
+    void ServerPlayer$startSleeping(final Sheep sheep);
 }

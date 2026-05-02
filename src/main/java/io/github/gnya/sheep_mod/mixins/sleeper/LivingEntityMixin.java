@@ -47,6 +47,9 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow
     public abstract void stopRiding();
 
+    @Shadow
+    public abstract boolean isSleeping();
+
     public boolean sheep_mod$isSleepInSheep() {
         return this.entityData.get(DATA_SLEEP_IN_SHEEP);
     }
@@ -73,9 +76,11 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     public void sheep_mod$LivingEntity$startSleeping(final Sheep sheep) {
+        SheepMod.LOGGER.info("LivingEntity$startSleeping");
+
         if (!((ISheepMixin) sheep).canSleepIn()) {
             return;
-        } else if (this.sheep_mod$isSleepInSheep()) {
+        } else if (this.isSleeping()) {
             return;
         } else if (!this.canRide(sheep)) {
             return;
@@ -94,12 +99,12 @@ public abstract class LivingEntityMixin extends Entity {
         ((EntityAccessor) this).setVehicle(sheep);
         ((EntityAccessor) sheep).callAddPassenger(this);
         this.needsSync = true;
-
-        SheepMod.LOGGER.info("START SLEEP");
     }
 
     @Inject(method = "stopSleeping", at = @At("HEAD"), cancellable = true)
     public void stopSleeping(CallbackInfo ci) {
+        SheepMod.LOGGER.info("stopSleeping: %s".formatted(this));
+
         if (!this.sheep_mod$isSleepInSheep()) {
             return;
         }
@@ -109,9 +114,6 @@ public abstract class LivingEntityMixin extends Entity {
         // TODO this.setPos(pos.x, pos.y, pos.z);
         this.entityData.set(DATA_SLEEP_IN_SHEEP, false);
         ci.cancel();
-
-        // TODO stopが2回呼ばれているのが気になる
-        SheepMod.LOGGER.info("STOP SLEEP");
     }
 
     @Inject(method = "defineSynchedData", at = @At("TAIL"))

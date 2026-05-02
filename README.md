@@ -27,17 +27,17 @@
 - [x] LivingEntityのstartSleeping/stopSleepingを羊に対応させる
 - [x] ServerPlayerのstartSleeping/stopSleepingを羊に対応させる
 - [x] PlayerのstartSleepInBed/stopSleepInBedを羊に対応させる
-- [ ] ServerPlayerのstartSleepInBed/stopSleepInBedを羊に対応させる
+- [x] ServerPlayerのstartSleepInBed/stopSleepInBedを羊に対応させる
+- [x] プレイヤーが羊の上で寝ると夜を明かせるようにする
+- [x] 近くに敵がいる場合は眠れないようにする
+- [x] 誰かが既に寝ている場合は眠れないようにする
+- [x] 眠れない場合にベッドと同様のメッセージを表示する
+- [x] 眠っているとき羊の体力を表示されないようにする
+- [x] Shiftで降りる…のメッセージを表示させない
 - [ ] どこで寝ているか見えないので寝ている際のカメラの位置を調整する
 - [ ] 寝ている際のプレイヤーの位置がおかしい
 - [ ] 寝ている際のプレイヤーの当たり判定がおかしい
 - [ ] オフセットの値を乗る側のEntityが指定する
-- [ ] プレイヤーが羊の上で寝ると夜を明かせるようにする
-- [ ] 近くに敵がいる場合は眠れないようにする
-- [ ] 誰かが既に寝ている場合は眠れないようにする
-- [ ] 眠れない場合にベッドと同様のメッセージを表示する
-- [x] 眠っているとき羊の体力を表示されないようにする
-- [x] Shiftで降りる…のメッセージを表示させない
 
 #### その他の機能の実装
 
