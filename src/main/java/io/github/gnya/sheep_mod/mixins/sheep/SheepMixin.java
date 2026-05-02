@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.gnya.sheep_mod.SheepMod;
 import io.github.gnya.sheep_mod.api.ISheepMixin;
-import io.github.gnya.sheep_mod.api.SheepSleeper;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -23,7 +22,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -136,26 +134,6 @@ public abstract class SheepMixin extends LivingEntity {
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     protected void readAdditionalSaveDataMixin(ValueInput input, CallbackInfo ci) {
         this.sheep_mod$setHappy(input.getBooleanOr("Happy", false));
-    }
-
-    @Override
-    public @NonNull Vec3 getPassengerRidingPosition(final @NonNull Entity passenger) {
-        // TODO 乗っている側がオフセットを決めるべき
-        if (passenger instanceof SheepSleeper && ((SheepSleeper) passenger).isSleepInSheep()) {
-            // Happyな羊の場合は乗る位置をずらす
-            Vec3 offset = Vec3.ZERO;
-            float zOffset = -0.5F;
-
-            // 0.6375: EntityType.SHEEP (1.2375 - 0.6) の値
-            offset = offset.add(0.0, (8.0 + 1.75) / 16 + 0.6375, -(8.0 + 1.75 + zOffset) / 16);
-            offset = offset.scale(HAPPY_SHEEP_SCALE);
-            offset = offset.add(Avatar.DEFAULT_VEHICLE_ATTACHMENT);
-            offset = offset.yRot((float) Math.toRadians(-this.yBodyRot));
-
-            return this.position().add(offset);
-        } else {
-            return super.getPassengerRidingPosition(passenger);
-        }
     }
 
     @Override

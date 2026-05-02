@@ -7,15 +7,13 @@ import io.github.gnya.sheep_mod.api.ISheepMixin;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
@@ -44,14 +42,33 @@ public abstract class LivingEntityMixin extends Entity {
         void callAddPassenger(final Entity passenger);
     }
 
+    // LivingEntity.stopRiding()を呼び出すために必要
     @Shadow
     public abstract void stopRiding();
 
     @Shadow
     public abstract boolean isSleeping();
 
+    @Shadow
+    public abstract @NonNull EntityDimensions getDimensions(@NonNull Pose pose);
+
     public boolean sheep_mod$isSleepInSheep() {
         return this.entityData.get(DATA_SLEEP_IN_SHEEP);
+    }
+
+    @Override
+    public @NonNull Vec3 getVehicleAttachmentPoint(final @NonNull Entity vehicle) {
+        if (this.sheep_mod$isSleepInSheep() && vehicle instanceof Sheep) {
+            float zOffset = -0.5F;
+            Vec3 offset = this.getDimensions(Pose.STANDING).attachments().get(EntityAttachment.VEHICLE, 0, 0.0F);
+
+            offset = offset.add(0.0, -(8.0 + 1.75) / 16, (8.0 + 1.75 + zOffset) / 16);
+            offset = offset.scale(((Sheep) vehicle).getScale());
+
+            return offset.yRot((float) Math.toRadians(-((Sheep) vehicle).yBodyRot));
+        } else {
+            return super.getVehicleAttachmentPoint(vehicle);
+        }
     }
 
     @ModifyReturnValue(method = "checkBedExists", at = @At("RETURN"))

@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.sheep.Sheep;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,7 +18,7 @@ public class SheepMod {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public SheepMod() {
-        MinecraftForge.EVENT_BUS.register(SheepMod.class);
+        PlayerInteractEvent.EntityInteractSpecific.BUS.addListener(SheepMod::onEntityInteract);
     }
 
     @SubscribeEvent
