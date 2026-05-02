@@ -2,53 +2,22 @@ package io.github.gnya.sheep_mod.mixins;
 
 import io.github.gnya.sheep_mod.api.ILivingEntityRenderStateMixin;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.util.Mth;
-import org.spongepowered.asm.mixin.Final;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(HumanoidModel.class)
 public abstract class HumanoidModelMixin {
-    @Shadow
-    @Final
-    public ModelPart rightArm;
-    @Shadow
-    @Final
-    public ModelPart leftArm;
-    @Shadow
-    @Final
-    public ModelPart rightLeg;
-    @Shadow
-    @Final
-    public ModelPart leftLeg;
-
-    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At("TAIL"))
-    public void setupAnim(final HumanoidRenderState state, CallbackInfo ci) {
-        float animationPos = state.walkAnimationPos;
-        float animationSpeed = state.walkAnimationSpeed;
-
-        if (!(state instanceof ILivingEntityRenderStateMixin customState)) {
-            return;
-        }
-
-        if (customState.isSleepingInSheep()) {
-            // 姿勢を上書きする
-            this.rightArm.xRot = Mth.cos(
-                    animationPos * 0.6662F + (float) Math.PI) * 2.0F * animationSpeed * 0.5F / state.speedValue;
-            this.leftArm.xRot = Mth.cos(animationPos * 0.6662F) * 2.0F * animationSpeed * 0.5F / state.speedValue;
-
-            this.rightLeg.xRot = Mth.cos(0.0F * 0.6662F) * 1.4F * 0.0F / state.speedValue;
-            this.rightLeg.yRot = 0.005F;
-            this.rightLeg.zRot = 0.005F;
-
-            this.leftLeg.xRot = Mth.cos(0.0F * 0.6662F + (float) Math.PI) * 1.4F * 0.0F / state.speedValue;
-            this.leftLeg.yRot = -0.005F;
-            this.leftLeg.zRot = -0.005F;
-        }
+    @Redirect(
+            method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At(
+            value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;isPassenger:Z",
+            opcode = Opcodes.GETFIELD
+    )
+    )
+    public boolean redirectSetupAnim(final HumanoidRenderState state) {
+        // 羊の上で寝ている場合にはEntityの上に乗ったときの姿勢にしない
+        return state.isPassenger && !((ILivingEntityRenderStateMixin) state).isSleepInSheep();
     }
 }

@@ -110,7 +110,6 @@ public abstract class LivingEntityMixin extends Entity {
         }
 
         this.setPose(Pose.SLEEPING);
-        // TODO this.setPos(bedPosition.getX() + 0.5, bedPosition.getY() + 0.6875, bedPosition.getZ() + 0.5);
         this.entityData.set(DATA_SLEEP_IN_SHEEP, true);
         this.setDeltaMovement(Vec3.ZERO);
         ((EntityAccessor) this).setVehicle(sheep);
@@ -128,7 +127,6 @@ public abstract class LivingEntityMixin extends Entity {
 
         this.stopRiding();
         this.setPose(Pose.STANDING);
-        // TODO this.setPos(pos.x, pos.y, pos.z);
         this.entityData.set(DATA_SLEEP_IN_SHEEP, false);
         ci.cancel();
     }

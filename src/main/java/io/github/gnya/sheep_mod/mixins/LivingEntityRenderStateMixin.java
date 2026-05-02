@@ -11,17 +11,17 @@ import org.spongepowered.asm.mixin.Unique;
 @Implements(@Interface(iface = ILivingEntityRenderStateMixin.class, prefix = "sheep_mod$"))
 public abstract class LivingEntityRenderStateMixin {
     @Unique
-    private boolean sheep_mod$isSleepingOnSheep;
+    private boolean sheep_mod$isSleepInSheep;
 
     @Unique
     private float sheep_mod$vehicleSheepYRot;
 
-    public boolean sheep_mod$isSleepingInSheep() {
-        return this.sheep_mod$isSleepingOnSheep;
+    public boolean sheep_mod$isSleepInSheep() {
+        return this.sheep_mod$isSleepInSheep;
     }
 
-    public void sheep_mod$setSleepingInSheep(final boolean value) {
-        this.sheep_mod$isSleepingOnSheep = value;
+    public void sheep_mod$setSleepInSheep(final boolean value) {
+        this.sheep_mod$isSleepInSheep = value;
     }
 
     public float sheep_mod$getBedSheepYRot() {
