@@ -1,4 +1,4 @@
-package io.github.gnya.sheep_mod.mixins;
+package io.github.gnya.sheep_mod.mixins.renderer;
 
 import io.github.gnya.sheep_mod.api.SheepSleeper;
 import net.minecraft.client.Camera;

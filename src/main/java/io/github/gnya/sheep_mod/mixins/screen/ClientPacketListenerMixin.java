@@ -1,6 +1,6 @@
-package io.github.gnya.sheep_mod.mixins.gui;
+package io.github.gnya.sheep_mod.mixins.screen;
 
-import io.github.gnya.sheep_mod.api.IClientboundSetPassengersPacketMixin;
+import io.github.gnya.sheep_mod.api.IMixinClientboundSetPassengersPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -29,7 +29,7 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
     @ModifyVariable(method = "handleSetEntityPassengersPacket", at = @At("STORE"), name = "wasPlayerMounted")
     public boolean modifyHandleSetEntityPassengersPacket(boolean wasPlayerMounted, ClientboundSetPassengersPacket packet) {
         int[] passengerId = packet.getPassengers();
-        BitSet isSleepInSheep = ((IClientboundSetPassengersPacketMixin) packet).getIsSleepInSheep();
+        BitSet isSleepInSheep = ((IMixinClientboundSetPassengersPacket) packet).getIsSleepInSheep();
 
         for (int i = 0; i < passengerId.length; i++) {
             Entity passenger = this.level.getEntity(passengerId[i]);

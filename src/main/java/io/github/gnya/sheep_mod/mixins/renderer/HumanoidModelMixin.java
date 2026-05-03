@@ -1,6 +1,6 @@
-package io.github.gnya.sheep_mod.mixins;
+package io.github.gnya.sheep_mod.mixins.renderer;
 
-import io.github.gnya.sheep_mod.api.ILivingEntityRenderStateMixin;
+import io.github.gnya.sheep_mod.api.IMixinLivingEntityRenderState;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import org.objectweb.asm.Opcodes;
@@ -18,6 +18,6 @@ public abstract class HumanoidModelMixin {
     )
     public boolean redirectSetupAnim(final HumanoidRenderState state) {
         // 羊の上で寝ている場合にはEntityの上に乗ったときの姿勢にしない
-        return state.isPassenger && !((ILivingEntityRenderStateMixin) state).isSleepInSheep();
+        return state.isPassenger && !((IMixinLivingEntityRenderState) state).isSleepInSheep();
     }
 }

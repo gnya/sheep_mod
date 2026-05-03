@@ -1,8 +1,8 @@
-package io.github.gnya.sheep_mod.mixins;
+package io.github.gnya.sheep_mod.mixins.renderer;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.gnya.sheep_mod.api.SheepSleeper;
-import io.github.gnya.sheep_mod.api.ILivingEntityRenderStateMixin;
+import io.github.gnya.sheep_mod.api.IMixinLivingEntityRenderState;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,8 +34,8 @@ public abstract class LivingEntityRendererMixin {
 
         float angle = sheep.getPreciseBodyRotation(partialTicks);
 
-        ((ILivingEntityRenderStateMixin) state).setSleepInSheep(true);
-        ((ILivingEntityRenderStateMixin) state).setBedSheepYRot(angle);
+        ((IMixinLivingEntityRenderState) state).setSleepInSheep(true);
+        ((IMixinLivingEntityRenderState) state).setBedSheepYRot(angle);
 
         // 身体の向きを動かさない
         state.bodyRot = 0.0F;
@@ -45,9 +45,9 @@ public abstract class LivingEntityRendererMixin {
 
     @ModifyVariable(method = "setupRotations", at = @At("LOAD"), name = "angle")
     protected float modifySetupRotations(float angle, @Local(argsOnly = true) LivingEntityRenderState state) {
-        if (((ILivingEntityRenderStateMixin) state).isSleepInSheep()) {
+        if (((IMixinLivingEntityRenderState) state).isSleepInSheep()) {
             // 羊の上で寝ているときは身体の回転を羊に合わせる
-            return 90.0F - ((ILivingEntityRenderStateMixin) state).getBedSheepYRot();
+            return 90.0F - ((IMixinLivingEntityRenderState) state).getBedSheepYRot();
         } else {
             return angle;
         }

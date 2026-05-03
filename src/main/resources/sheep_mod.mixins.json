@@ -3,18 +3,18 @@
   "package": "io.github.gnya.sheep_mod.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "gui.GuiMixin",
-    "gui.ClientPacketListenerMixin",
-    "gui.ClientboundSetPassengersPacketMixin",
+    "renderer.HumanoidModelMixin",
+    "renderer.LivingEntityRendererMixin",
+    "renderer.LivingEntityRenderStateMixin",
+    "renderer.CameraMixin",
+    "screen.GuiMixin",
+    "screen.ClientPacketListenerMixin",
+    "screen.ClientboundSetPassengersPacketMixin",
     "sheep.SheepMixin",
     "sheep.EatBlockGoalMixin",
     "sleeper.LivingEntityMixin",
-    "sleeper.LivingEntityMixin$EntityAccessor",
+    "sleeper.EntityAccessor",
     "sleeper.PlayerMixin",
-    "sleeper.ServerPlayerMixin",
-    "HumanoidModelMixin",
-    "LivingEntityRendererMixin",
-    "LivingEntityRenderStateMixin",
-    "CameraMixin"
+    "sleeper.ServerPlayerMixin"
   ]
 }

@@ -3,7 +3,7 @@ package io.github.gnya.sheep_mod.mixins.sheep;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.gnya.sheep_mod.SheepMod;
-import io.github.gnya.sheep_mod.api.ISheepMixin;
+import io.github.gnya.sheep_mod.api.IMixinSheep;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.data.loot.packs.LootData;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Sheep.class)
-@Implements(@Interface(iface = ISheepMixin.class, prefix = "sheep_mod$"))
+@Implements(@Interface(iface = IMixinSheep.class, prefix = "sheep_mod$"))
 public abstract class SheepMixin extends LivingEntity {
     @Unique
     private static final float HAPPY_SHEEP_HEALTH_SCALE = 4.0F;
@@ -234,9 +234,9 @@ public abstract class SheepMixin extends LivingEntity {
     public Sheep modifyGetBreedOffspring(Sheep sheep, @Local(argsOnly = true) AgeableMob partner) {
         SheepMod.LOGGER.info("getBreedOffspring");
 
-        if (sheep != null && this.sheep_mod$isHappy() && ((ISheepMixin) partner).isHappy()) {
+        if (sheep != null && this.sheep_mod$isHappy() && ((IMixinSheep) partner).isHappy()) {
             // 両親がHappyな羊であれば子もHappyな羊になる
-            ((ISheepMixin) sheep).setHappy(true);
+            ((IMixinSheep) sheep).setHappy(true);
         }
 
         return sheep;

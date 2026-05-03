@@ -1,7 +1,7 @@
-package io.github.gnya.sheep_mod.mixins.gui;
+package io.github.gnya.sheep_mod.mixins.screen;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.gnya.sheep_mod.api.IClientboundSetPassengersPacketMixin;
+import io.github.gnya.sheep_mod.api.IMixinClientboundSetPassengersPacket;
 import io.github.gnya.sheep_mod.api.SheepSleeper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
@@ -18,7 +18,7 @@ import java.util.BitSet;
 import java.util.List;
 
 @Mixin(ClientboundSetPassengersPacket.class)
-@Implements(@Interface(iface = IClientboundSetPassengersPacketMixin.class, prefix = "sheep_mod$"))
+@Implements(@Interface(iface = IMixinClientboundSetPassengersPacket.class, prefix = "sheep_mod$"))
 public abstract class ClientboundSetPassengersPacketMixin {
     @Unique
     private BitSet sheep_mod$isSleepInSheep;

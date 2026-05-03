@@ -2,6 +2,6 @@ package io.github.gnya.sheep_mod.api;
 
 import java.util.BitSet;
 
-public interface IClientboundSetPassengersPacketMixin {
+public interface IMixinClientboundSetPassengersPacket {
     BitSet getIsSleepInSheep();
 }

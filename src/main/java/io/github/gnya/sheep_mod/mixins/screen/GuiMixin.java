@@ -1,4 +1,4 @@
-package io.github.gnya.sheep_mod.mixins.gui;
+package io.github.gnya.sheep_mod.mixins.screen;
 
 import io.github.gnya.sheep_mod.api.SheepSleeper;
 import net.minecraft.client.gui.Gui;

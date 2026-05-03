@@ -2,7 +2,7 @@ package io.github.gnya.sheep_mod;
 
 import com.mojang.logging.LogUtils;
 import io.github.gnya.sheep_mod.api.PlayableSheepSleeper;
-import io.github.gnya.sheep_mod.api.ISheepMixin;
+import io.github.gnya.sheep_mod.api.IMixinSheep;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -31,7 +31,7 @@ public class SheepMod {
 
         Entity target = event.getTarget();
 
-        if (!(target instanceof ISheepMixin sheep)) {
+        if (!(target instanceof IMixinSheep sheep)) {
             return;
         } else if (!sheep.canSleepIn()) {
             return;

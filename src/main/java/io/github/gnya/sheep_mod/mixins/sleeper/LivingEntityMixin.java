@@ -3,7 +3,7 @@ package io.github.gnya.sheep_mod.mixins.sleeper;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.gnya.sheep_mod.SheepMod;
 import io.github.gnya.sheep_mod.api.SheepSleeper;
-import io.github.gnya.sheep_mod.api.ISheepMixin;
+import io.github.gnya.sheep_mod.api.IMixinSheep;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -16,8 +16,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -32,15 +30,6 @@ public abstract class LivingEntityMixin extends Entity {
     private LivingEntityMixin(EntityType<?> type, Level level) {
         // ダミーコンストラクタ
         super(type, level);
-    }
-
-    @Mixin(Entity.class)
-    public interface EntityAccessor {
-        @Accessor("vehicle")
-        void setVehicle(final Entity vehicle);
-
-        @Invoker("addPassenger")
-        void callAddPassenger(final Entity passenger);
     }
 
     // LivingEntity.stopRiding()を呼び出すために必要
@@ -78,7 +67,7 @@ public abstract class LivingEntityMixin extends Entity {
             // TODO getBedSheep()を追加する
             Entity vehicle = this.getVehicle();
 
-            return vehicle instanceof Sheep sheep && ((ISheepMixin) sheep).canSleepIn();
+            return vehicle instanceof Sheep sheep && ((IMixinSheep) sheep).canSleepIn();
         } else {
             return exists;
         }
@@ -96,7 +85,7 @@ public abstract class LivingEntityMixin extends Entity {
     public void sheep_mod$LivingEntity$startSleeping(final Sheep sheep) {
         SheepMod.LOGGER.info("LivingEntity$startSleeping");
 
-        if (!((ISheepMixin) sheep).canSleepIn()) {
+        if (!((IMixinSheep) sheep).canSleepIn()) {
             return;
         } else if (this.isSleeping()) {
             return;

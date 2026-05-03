@@ -1,6 +1,6 @@
-package io.github.gnya.sheep_mod.mixins;
+package io.github.gnya.sheep_mod.mixins.renderer;
 
-import io.github.gnya.sheep_mod.api.ILivingEntityRenderStateMixin;
+import io.github.gnya.sheep_mod.api.IMixinLivingEntityRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(HumanoidRenderState.class)
-@Implements(@Interface(iface = ILivingEntityRenderStateMixin.class, prefix = "sheep_mod$"))
+@Implements(@Interface(iface = IMixinLivingEntityRenderState.class, prefix = "sheep_mod$"))
 public abstract class LivingEntityRenderStateMixin {
     @Unique
     private boolean sheep_mod$isSleepInSheep;

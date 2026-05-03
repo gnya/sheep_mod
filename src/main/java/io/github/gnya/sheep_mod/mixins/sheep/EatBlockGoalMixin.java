@@ -1,6 +1,6 @@
 package io.github.gnya.sheep_mod.mixins.sheep;
 
-import io.github.gnya.sheep_mod.api.ISheepMixin;
+import io.github.gnya.sheep_mod.api.IMixinSheep;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.EatBlockGoal;
@@ -29,7 +29,7 @@ public abstract class EatBlockGoalMixin {
     public boolean redirectTick(Level level, BlockPos pos, BlockState blockState, int updateFlags) {
         boolean res = level.setBlock(pos, blockState, updateFlags);
 
-        if (this.mob instanceof Sheep && ((ISheepMixin) this.mob).isHappy()) {
+        if (this.mob instanceof Sheep && ((IMixinSheep) this.mob).isHappy()) {
             // Happyな羊は最大5ブロック分の草を食べる
             for (var randomPos : BlockPos.randomInCube(level.getRandom(), 4, pos, 1)) {
                 if (level.getBlockState(randomPos).is(Blocks.GRASS_BLOCK)) {

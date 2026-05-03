@@ -1,6 +1,6 @@
 package io.github.gnya.sheep_mod.api;
 
-public interface ISheepMixin {
+public interface IMixinSheep {
     boolean isHappy();
 
     void setHappy(final boolean value);
