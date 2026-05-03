@@ -5,12 +5,14 @@ import com.llamalad7.mixinextras.sugar.Local;
 import io.github.gnya.sheep_mod.SheepMod;
 import io.github.gnya.sheep_mod.api.ISheepMixin;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.data.loot.packs.LootData;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -22,6 +24,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.NonNull;
@@ -47,6 +50,12 @@ public abstract class SheepMixin extends LivingEntity {
     private static final int HAPPY_SHEEP_DROP_SCALE = 4;
 
     @Unique
+    private static final int HAPPY_SHEEP_DROP_INTERVAL = 6000;
+
+    @Unique
+    private static final float HAPPY_SHEEP_SPAWN_WEIGHT = 0.1F;
+
+    @Unique
     private static final Identifier HAPPY_SHEEP_HEALTH_ID = Identifier.fromNamespaceAndPath(
             "sheep_mod", "happy_sheep/health");
 
@@ -58,12 +67,21 @@ public abstract class SheepMixin extends LivingEntity {
     private static final EntityDataAccessor<Boolean> DATA_HAPPY = SynchedEntityData.defineId(
             SheepMixin.class, EntityDataSerializers.BOOLEAN);
 
+    @Unique
+    private int sheep_mod$woolTime;
+
     private SheepMixin(EntityType<? extends LivingEntity> type, Level level) {
         // ダミーコンストラクタ
         super(type, level);
     }
 
+    @Inject(method = "<init>", at = @At("TAIL"))
+    public void onInit(EntityType<Entity> type, Level level, CallbackInfo ci) {
+        this.sheep_mod$woolTime = this.random.nextInt(HAPPY_SHEEP_DROP_INTERVAL) + HAPPY_SHEEP_DROP_INTERVAL;
+    }
+
     @Shadow
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean isSheared();
 
     @Shadow
@@ -143,18 +161,30 @@ public abstract class SheepMixin extends LivingEntity {
 
     @Inject(method = "aiStep", at = @At("HEAD"))
     public void aiStep(CallbackInfo ci) {
-        if (this.level().isClientSide() && this.sheep_mod$isHappy() && !this.isSheared()) {
-            // Happyな羊からパーティクルを出す
-            this.level()
-                    .addParticle(
-                            new DustParticleOptions(this.getColor().getTextureDiffuseColor(), 1.0F),
-                            this.getRandomX(0.7),
-                            this.getRandomY(),
-                            this.getRandomZ(0.7),
-                            0.0,
-                            0.0,
-                            0.0
-                    );
+        if (this.sheep_mod$isHappy() && !this.isSheared() && this.isAlive()) {
+            if (this.level().isClientSide()) {
+                // Happyな羊からパーティクルを出す
+                this.level()
+                        .addParticle(
+                                new DustParticleOptions(this.getColor().getTextureDiffuseColor(), 1.0F),
+                                this.getRandomX(0.7),
+                                this.getRandomY(),
+                                this.getRandomZ(0.7),
+                                0.0,
+                                0.0,
+                                0.0
+                        );
+            }
+
+            if (this.level() instanceof ServerLevel level && !this.isBaby() && --this.sheep_mod$woolTime <= 0) {
+                // Happyな羊から時々羊毛がドロップする
+                var wool = LootData.WOOL_ITEM_BY_DYE.get(this.getColor()).asItem().getDefaultInstance();
+
+                super.spawnAtLocation(level, wool, 1.0F);
+                this.playSound(SoundEvents.WOOL_HIT, 1.0F, this.random.triangle(1.0F, 0.2F));
+                this.gameEvent(GameEvent.ENTITY_PLACE);
+                this.sheep_mod$woolTime = this.random.nextInt(HAPPY_SHEEP_DROP_INTERVAL) + HAPPY_SHEEP_DROP_INTERVAL;
+            }
         }
     }
 
@@ -217,9 +247,7 @@ public abstract class SheepMixin extends LivingEntity {
             ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason,
             SpawnGroupData groupData, CallbackInfoReturnable<SpawnGroupData> cir
     ) {
-        int selection = level.getRandom().nextInt(10);
-
-        if (selection < 5) {
+        if (level.getRandom().nextFloat() < HAPPY_SHEEP_SPAWN_WEIGHT) {
             // 一定確率でHappyな羊が生まれる
             this.sheep_mod$setHappy(true);
         }

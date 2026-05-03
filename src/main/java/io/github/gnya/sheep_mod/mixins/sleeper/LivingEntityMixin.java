@@ -7,6 +7,7 @@ import io.github.gnya.sheep_mod.api.ISheepMixin;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.level.Level;
@@ -114,6 +115,7 @@ public abstract class LivingEntityMixin extends Entity {
         this.setDeltaMovement(Vec3.ZERO);
         ((EntityAccessor) this).setVehicle(sheep);
         ((EntityAccessor) sheep).callAddPassenger(this);
+        sheep.playSound(SoundEvents.WOOL_HIT, 1.0F, this.random.triangle(1.0F, 0.2F));
         this.needsSync = true;
     }
 
