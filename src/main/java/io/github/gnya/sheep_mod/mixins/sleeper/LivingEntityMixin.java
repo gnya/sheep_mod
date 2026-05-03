@@ -85,13 +85,11 @@ public abstract class LivingEntityMixin extends Entity {
     public void sheep_mod$LivingEntity$startSleeping(final Sheep sheep) {
         SheepMod.LOGGER.info("LivingEntity$startSleeping");
 
-        if (!((IMixinSheep) sheep).canSleepIn()) {
-            return;
-        } else if (this.isSleeping()) {
-            return;
-        } else if (!this.canRide(sheep)) {
-            return;
-        } else if (!sheep.getPassengers().isEmpty()) {
+        if (
+                !((IMixinSheep) sheep).canSleepIn() ||
+                        this.isSleeping() ||
+                        !this.canRide(sheep) ||
+                        !sheep.getPassengers().isEmpty()) {
             return;
         }
 

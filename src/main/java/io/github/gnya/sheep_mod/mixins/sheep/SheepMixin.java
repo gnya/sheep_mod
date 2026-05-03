@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.gnya.sheep_mod.SheepMod;
 import io.github.gnya.sheep_mod.api.IMixinSheep;
+import io.github.gnya.sheep_mod.api.PlayableSheepSleeper;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.data.loot.packs.LootData;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -14,19 +15,26 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.attribute.BedRule;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -157,6 +165,47 @@ public abstract class SheepMixin extends LivingEntity {
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     protected void readAdditionalSaveDataMixin(ValueInput input, CallbackInfo ci) {
         this.sheep_mod$setHappy(input.getBooleanOr("Happy", false));
+    }
+
+    @ModifyReturnValue(method = "mobInteract", at = @At("RETURN"))
+    public InteractionResult modifyMobInteract(InteractionResult result, Player player, InteractionHand hand) {
+        if (
+                result != InteractionResult.PASS ||
+                        !(this.level() instanceof ServerLevel serverLevel) ||
+                        hand != InteractionHand.MAIN_HAND ||
+                        !this.sheep_mod$canSleepIn() ||
+                        player.isSleeping() || !player.isAlive()
+        ) {
+            return result;
+        }
+
+        Vec3 pos = this.position();
+        BedRule rule = serverLevel.environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, pos);
+
+        if (rule.explodes()) {
+            // ベッドが爆発するなら羊も爆発する
+            this.dead = true;
+            serverLevel.explode(
+                    this,
+                    Explosion.getDefaultDamageSource(serverLevel, this),
+                    null,
+                    pos,
+                    5.0F,
+                    true,
+                    Level.ExplosionInteraction.MOB
+            );
+            this.triggerOnDeathMobEffects(serverLevel, Entity.RemovalReason.KILLED);
+            this.remove(Entity.RemovalReason.DISCARDED);
+        } else {
+            // プレイヤーを羊の上に寝かせる
+            ((PlayableSheepSleeper) player).startSleepInBed((Sheep) (Object) this).ifLeft(problem -> {
+                if (problem.message() != null) {
+                    player.sendOverlayMessage(problem.message());
+                }
+            });
+        }
+
+        return InteractionResult.SUCCESS_SERVER;
     }
 
     @Inject(method = "aiStep", at = @At("HEAD"))
