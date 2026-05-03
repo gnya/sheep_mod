@@ -1,13 +1,13 @@
 package io.github.gnya.sheep_mod.mixins.renderer;
 
 import io.github.gnya.sheep_mod.api.IMixinLivingEntityRenderState;
-import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(HumanoidRenderState.class)
+@Mixin(LivingEntityRenderState.class)
 @Implements(@Interface(iface = IMixinLivingEntityRenderState.class, prefix = "sheep_mod$"))
 public abstract class LivingEntityRenderStateMixin {
     @Unique

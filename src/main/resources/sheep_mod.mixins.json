@@ -3,9 +3,9 @@
   "package": "io.github.gnya.sheep_mod.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "renderer.HumanoidModelMixin",
-    "renderer.LivingEntityRendererMixin",
     "renderer.LivingEntityRenderStateMixin",
+    "renderer.LivingEntityRendererMixin",
+    "renderer.HumanoidModelMixin",
     "renderer.CameraMixin",
     "screen.GuiMixin",
     "screen.ClientPacketListenerMixin",
@@ -15,6 +15,7 @@
     "sleeper.LivingEntityMixin",
     "sleeper.EntityAccessor",
     "sleeper.PlayerMixin",
-    "sleeper.ServerPlayerMixin"
+    "sleeper.ServerPlayerMixin",
+    "sleeper.VillagerGoalPackagesMixin"
   ]
 }
