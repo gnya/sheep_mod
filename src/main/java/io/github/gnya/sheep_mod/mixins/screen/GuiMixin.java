@@ -9,13 +9,13 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Gui.class)
 public abstract class GuiMixin {
-    @ModifyVariable(method = "getPlayerVehicleWithHealth", at = @At("STORE"), name = "player")
-    public Player modifyGetPlayerVehicleWithHealth(Player player) {
-        if (((SheepSleeper) player).isSleepInSheep()) {
-            // 羊の上で寝ているときには羊の体力バーを消す
-            return null;
-        } else {
-            return player;
-        }
+  @ModifyVariable(method = "getPlayerVehicleWithHealth", at = @At("STORE"), name = "player")
+  public Player modifyGetPlayerVehicleWithHealth(Player player) {
+    if (((SheepSleeper) player).isSleepInSheep()) {
+      // 羊の上で寝ているときには羊の体力バーを消す
+      return null;
+    } else {
+      return player;
     }
+  }
 }

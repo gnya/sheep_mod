@@ -1,9 +1,9 @@
 package io.github.gnya.sheep_mod.api;
 
 public interface IMixinSheep {
-    boolean isHappy();
+  boolean isHappy();
 
-    void setHappy(final boolean value);
+  void setHappy(final boolean value);
 
-    boolean canSleepIn();
+  boolean canSleepIn();
 }

@@ -16,28 +16,27 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(EatBlockGoal.class)
 public abstract class EatBlockGoalMixin {
-    @Shadow
-    @Final
-    private Mob mob;
+  @Shadow @Final private Mob mob;
 
-    @Redirect(
-            method = "tick", at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"
-    )
-    )
-    public boolean redirectTick(Level level, BlockPos pos, BlockState blockState, int updateFlags) {
-        boolean res = level.setBlock(pos, blockState, updateFlags);
+  @Redirect(
+      method = "tick",
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
+  public boolean redirectTick(Level level, BlockPos pos, BlockState blockState, int updateFlags) {
+    boolean res = level.setBlock(pos, blockState, updateFlags);
 
-        if (this.mob instanceof Sheep && ((IMixinSheep) this.mob).isHappy()) {
-            // Happyな羊は最大5ブロック分の草を食べる
-            for (var randomPos : BlockPos.randomInCube(level.getRandom(), 4, pos, 1)) {
-                if (level.getBlockState(randomPos).is(Blocks.GRASS_BLOCK)) {
-                    res &= level.setBlock(randomPos, blockState, updateFlags);
-                }
-            }
+    if (this.mob instanceof Sheep && ((IMixinSheep) this.mob).isHappy()) {
+      // Happyな羊は最大5ブロック分の草を食べる
+      for (var randomPos : BlockPos.randomInCube(level.getRandom(), 4, pos, 1)) {
+        if (level.getBlockState(randomPos).is(Blocks.GRASS_BLOCK)) {
+          res &= level.setBlock(randomPos, blockState, updateFlags);
         }
-
-        return res;
+      }
     }
+
+    return res;
+  }
 }

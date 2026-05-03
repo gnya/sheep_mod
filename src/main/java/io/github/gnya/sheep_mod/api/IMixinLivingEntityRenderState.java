@@ -1,11 +1,11 @@
 package io.github.gnya.sheep_mod.api;
 
 public interface IMixinLivingEntityRenderState {
-    boolean isSleepInSheep();
+  boolean isSleepInSheep();
 
-    void setSleepInSheep(final boolean value);
+  void setSleepInSheep(final boolean value);
 
-    float getBedSheepYRot();
+  float getBedSheepYRot();
 
-    void setBedSheepYRot(final float value);
+  void setBedSheepYRot(final float value);
 }

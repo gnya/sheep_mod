@@ -5,6 +5,8 @@ import com.mojang.datafixers.util.Either;
 import io.github.gnya.sheep_mod.SheepMod;
 import io.github.gnya.sheep_mod.api.PlayableSheepSleeper;
 import io.github.gnya.sheep_mod.api.SheepSleeper;
+import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
@@ -27,102 +29,98 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.*;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 @Mixin(ServerPlayer.class)
 @Implements(@Interface(iface = PlayableSheepSleeper.class, prefix = "sheep_mod$"))
 public abstract class ServerPlayerMixin extends Player {
-    @Shadow
-    public ServerGamePacketListenerImpl connection;
+  @Shadow public ServerGamePacketListenerImpl connection;
 
-    @Shadow
-    @Final
-    private MinecraftServer server;
+  @Shadow @Final private MinecraftServer server;
 
-    @Shadow
-    public abstract @NonNull ServerLevel level();
+  public ServerPlayerMixin(Level level, GameProfile gameProfile) {
+    super(level, gameProfile);
+  }
 
-    public ServerPlayerMixin(Level level, GameProfile gameProfile) {
-        super(level, gameProfile);
-    }
+  @Shadow
+  public abstract @NonNull ServerLevel level();
 
-    public void sheep_mod$startSleeping(final Sheep sheep) {
-        this.sheep_mod$ServerPlayer$startSleeping(sheep);
-    }
+  public void sheep_mod$startSleeping(final Sheep sheep) {
+    this.sheep_mod$ServerPlayer$startSleeping(sheep);
+  }
 
-    public void sheep_mod$ServerPlayer$startSleeping(final Sheep sheep) {
-        SheepMod.LOGGER.info("ServerPlayer$startSleeping");
+  public void sheep_mod$ServerPlayer$startSleeping(final Sheep sheep) {
+    SheepMod.LOGGER.info("ServerPlayer$startSleeping");
 
-        this.resetStat(Stats.CUSTOM.get(Stats.TIME_SINCE_REST));
-        ((SheepSleeper) this).LivingEntity$startSleeping(sheep);
+    this.resetStat(Stats.CUSTOM.get(Stats.TIME_SINCE_REST));
+    ((SheepSleeper) this).LivingEntity$startSleeping(sheep);
 
-        // ServerPlayer.startRidingの中身と同じ処理です
-        sheep.positionRider(this);
-        this.connection.teleport(new PositionMoveRotation(this.position(), Vec3.ZERO, 0.0F, 0.0F), Relative.ROTATION);
-        this.server.getPlayerList().sendActiveEffects(sheep, this.connection);
-        this.connection.send(new ClientboundSetPassengersPacket(sheep));
-    }
+    // ServerPlayer.startRidingの中身と同じ処理です
+    sheep.positionRider(this);
+    this.connection.teleport(
+        new PositionMoveRotation(this.position(), Vec3.ZERO, 0.0F, 0.0F), Relative.ROTATION);
+    this.server.getPlayerList().sendActiveEffects(sheep, this.connection);
+    this.connection.send(new ClientboundSetPassengersPacket(sheep));
+  }
 
-    public Either<BedSleepingProblem, Unit> sheep_mod$startSleepInBed(final Sheep sheep) {
-        return this.sheep_mod$ServerPlayer$startSleepInBed(
-                sheep, ((SheepSleeper) this)::ServerPlayer$startSleeping);
-    }
+  public Either<BedSleepingProblem, Unit> sheep_mod$startSleepInBed(final Sheep sheep) {
+    return this.sheep_mod$ServerPlayer$startSleepInBed(
+        sheep, ((SheepSleeper) this)::ServerPlayer$startSleeping);
+  }
 
-    public Either<BedSleepingProblem, Unit> sheep_mod$ServerPlayer$startSleepInBed(
-            final Sheep sheep, final Consumer<Sheep> startSleeping) {
-        SheepMod.LOGGER.info("ServerPlayer$startSleepInBed");
+  public Either<BedSleepingProblem, Unit> sheep_mod$ServerPlayer$startSleepInBed(
+      final Sheep sheep, final Consumer<Sheep> startSleeping) {
+    SheepMod.LOGGER.info("ServerPlayer$startSleepInBed");
 
-        if (!sheep.getPassengers().isEmpty()) {
-            this.sendOverlayMessage(Component.translatable("block.minecraft.bed.occupied"));
+    if (!sheep.getPassengers().isEmpty()) {
+      this.sendOverlayMessage(Component.translatable("block.minecraft.bed.occupied"));
 
-            return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
-        } else if (!this.isSleeping() && this.isAlive()) {
-            Vec3 pos = sheep.position();
-            BedRule rule = this.level().environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, pos);
+      return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
+    } else if (!this.isSleeping() && this.isAlive()) {
+      Vec3 pos = sheep.position();
+      BedRule rule =
+          this.level().environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, pos);
 
-            if (!rule.canSleep(this.level())) {
-                return Either.left(rule.asProblem());
-            } else {
-                if (!this.isCreative()) {
-                    double hRange = 8.0;
-                    double vRange = 5.0;
-                    List<Monster> monsters = this.level()
-                            .getEntitiesOfClass(
-                                    Monster.class,
-                                    new AABB(
-                                            pos.x() - hRange,
-                                            pos.y() - vRange,
-                                            pos.z() - hRange,
-                                            pos.x() + hRange,
-                                            pos.y() + vRange,
-                                            pos.z() + hRange
-                                    ),
-                                    monster -> monster.isPreventingPlayerRest(this.level(), this)
-                            );
+      if (!rule.canSleep(this.level())) {
+        return Either.left(rule.asProblem());
+      } else {
+        if (!this.isCreative()) {
+          double hRange = 8.0;
+          double vRange = 5.0;
+          List<Monster> monsters =
+              this.level()
+                  .getEntitiesOfClass(
+                      Monster.class,
+                      new AABB(
+                          pos.x() - hRange,
+                          pos.y() - vRange,
+                          pos.z() - hRange,
+                          pos.x() + hRange,
+                          pos.y() + vRange,
+                          pos.z() + hRange),
+                      monster -> monster.isPreventingPlayerRest(this.level(), this));
 
-                    if (!monsters.isEmpty()) {
-                        return Either.left(BedSleepingProblem.NOT_SAFE);
-                    }
-                }
-
-                var result = ((PlayableSheepSleeper) this).Player$startSleepInBed(sheep, startSleeping);
-
-                result.ifRight(_ -> {
-                    this.awardStat(Stats.SLEEP_IN_BED);
-                    CriteriaTriggers.SLEPT_IN_BED.trigger((ServerPlayer) (Object) this);
-                });
-
-                if (!this.level().canSleepThroughNights()) {
-                    this.sendOverlayMessage(Component.translatable("sleep.not_possible"));
-                }
-
-                this.level().updateSleepingPlayerList();
-
-                return result;
-            }
-        } else {
-            return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
+          if (!monsters.isEmpty()) {
+            return Either.left(BedSleepingProblem.NOT_SAFE);
+          }
         }
+
+        var result = ((PlayableSheepSleeper) this).Player$startSleepInBed(sheep, startSleeping);
+
+        result.ifRight(
+            _ -> {
+              this.awardStat(Stats.SLEEP_IN_BED);
+              CriteriaTriggers.SLEPT_IN_BED.trigger((ServerPlayer) (Object) this);
+            });
+
+        if (!this.level().canSleepThroughNights()) {
+          this.sendOverlayMessage(Component.translatable("sleep.not_possible"));
+        }
+
+        this.level().updateSleepingPlayerList();
+
+        return result;
+      }
+    } else {
+      return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
     }
+  }
 }

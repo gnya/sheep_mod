@@ -10,14 +10,16 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(HumanoidModel.class)
 public abstract class HumanoidModelMixin {
-    @Redirect(
-            method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At(
-            value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;isPassenger:Z",
-            opcode = Opcodes.GETFIELD
-    )
-    )
-    public boolean redirectSetupAnim(final HumanoidRenderState state) {
-        // 羊の上で寝ている場合にはEntityの上に乗ったときの姿勢にしない
-        return state.isPassenger && !((IMixinLivingEntityRenderState) state).isSleepInSheep();
-    }
+  @Redirect(
+      method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V",
+      at =
+          @At(
+              value = "FIELD",
+              target =
+                  "Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;isPassenger:Z",
+              opcode = Opcodes.GETFIELD))
+  public boolean redirectSetupAnim(final HumanoidRenderState state) {
+    // 羊の上で寝ている場合にはEntityの上に乗ったときの姿勢にしない
+    return state.isPassenger && !((IMixinLivingEntityRenderState) state).isSleepInSheep();
+  }
 }

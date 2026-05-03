@@ -7,9 +7,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Entity.class)
 public interface EntityAccessor {
-    @Accessor("vehicle")
-    void setVehicle(final Entity vehicle);
+  @Accessor("vehicle")
+  void setVehicle(final Entity vehicle);
 
-    @Invoker("addPassenger")
-    void callAddPassenger(final Entity passenger);
+  @Invoker("addPassenger")
+  void callAddPassenger(final Entity passenger);
 }
