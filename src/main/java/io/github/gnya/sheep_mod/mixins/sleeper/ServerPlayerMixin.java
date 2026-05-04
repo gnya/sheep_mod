@@ -48,7 +48,7 @@ public abstract class ServerPlayerMixin extends Player {
   }
 
   public void sheep_mod$ServerPlayer$startSleeping(final Sheep sheep) {
-    SheepMod.LOGGER.info("ServerPlayer$startSleeping");
+    SheepMod.LOGGER.debug("ServerPlayer$startSleeping");
 
     this.resetStat(Stats.CUSTOM.get(Stats.TIME_SINCE_REST));
     ((SheepSleeper) this).LivingEntity$startSleeping(sheep);
@@ -68,7 +68,7 @@ public abstract class ServerPlayerMixin extends Player {
 
   public Either<BedSleepingProblem, Unit> sheep_mod$ServerPlayer$startSleepInBed(
       final Sheep sheep, final Consumer<Sheep> startSleeping) {
-    SheepMod.LOGGER.info("ServerPlayer$startSleepInBed");
+    SheepMod.LOGGER.debug("ServerPlayer$startSleepInBed");
 
     if (!sheep.getPassengers().isEmpty()) {
       this.sendOverlayMessage(Component.translatable("block.minecraft.bed.occupied"));

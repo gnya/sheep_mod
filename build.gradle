@@ -20,6 +20,8 @@ minecraft {
             systemProperty 'eventbus.api.strictRuntimeChecks', 'true'
             systemProperty 'forge.enabledGameTestNamespaces', 'sheep_mod'
 
+            systemProperty 'forge.logging.console.level', 'debug'
+
             args "--mixin.config=sheep_mod.mixins.json"
         }
 

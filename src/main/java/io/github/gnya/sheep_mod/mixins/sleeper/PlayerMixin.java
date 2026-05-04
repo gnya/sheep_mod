@@ -31,7 +31,7 @@ public abstract class PlayerMixin extends Avatar {
 
   public Either<Player.BedSleepingProblem, Unit> sheep_mod$Player$startSleepInBed(
       final Sheep sheep, final Consumer<Sheep> startSleeping) {
-    SheepMod.LOGGER.info("Player$startSleepInBed");
+    SheepMod.LOGGER.debug("Player$startSleepInBed");
 
     startSleeping.accept(sheep);
     this.sleepCounter = 0;

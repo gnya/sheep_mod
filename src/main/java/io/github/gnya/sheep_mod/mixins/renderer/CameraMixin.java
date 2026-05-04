@@ -5,6 +5,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.sheep.Sheep;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Camera.class)
 public abstract class CameraMixin {
   @Shadow private @Nullable Entity entity;
+  @Shadow private Vec3 position;
 
   @Shadow
   protected abstract void move(float forwards, float up, float right);
@@ -29,6 +31,9 @@ public abstract class CameraMixin {
   @Shadow
   public abstract boolean isDetached();
 
+  @Shadow
+  protected abstract void setPosition(Vec3 position);
+
   @Redirect(
       method = "alignWithEntity",
       at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isSleeping()Z"))
@@ -38,15 +43,16 @@ public abstract class CameraMixin {
 
   @Inject(method = "alignWithEntity", at = @At("TAIL"))
   private void alignWithEntity(float partialTicks, CallbackInfo ci) {
-    if (!this.isDetached()
-        && this.entity instanceof LivingEntity
-        && ((SheepSleeper) entity).isSleepInSheep()) {
-      // TODO getBedSheep()を追加する
-      if (entity.getVehicle() instanceof Sheep sheep) {
-        float angle = sheep.getPreciseBodyRotation(partialTicks);
+    if (!this.isDetached() && this.entity instanceof LivingEntity) {
+      Sheep sheep = ((SheepSleeper) this.entity).getBedSheep();
 
-        this.setRotation(angle, 40.0F);
-        this.move(-this.getMaxZoom(sheep.getScale()), 0.5F, 0.0F);
+      if (sheep != null) {
+        float angle = sheep.getPreciseBodyRotation(partialTicks);
+        Vec3 offset = Vec3.Z_AXIS.scale(0.4).yRot((float) Math.toRadians(-angle));
+
+        this.setPosition(this.position.add(offset));
+        this.setRotation(angle + 180.0F, 45.0F);
+        this.move(-this.getMaxZoom(sheep.getScale()), 0.0F, 0.0F);
       }
     }
   }

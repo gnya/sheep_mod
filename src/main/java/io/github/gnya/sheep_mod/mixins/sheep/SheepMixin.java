@@ -2,7 +2,6 @@ package io.github.gnya.sheep_mod.mixins.sheep;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.gnya.sheep_mod.SheepMod;
 import io.github.gnya.sheep_mod.api.IMixinSheep;
 import io.github.gnya.sheep_mod.api.PlayableSheepSleeper;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -280,8 +279,6 @@ public abstract class SheepMixin extends LivingEntity {
           "getBreedOffspring(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/AgeableMob;)Lnet/minecraft/world/entity/animal/sheep/Sheep;",
       at = @At("RETURN"))
   public Sheep modifyGetBreedOffspring(Sheep sheep, @Local(argsOnly = true) AgeableMob partner) {
-    SheepMod.LOGGER.info("getBreedOffspring");
-
     if (sheep != null && this.sheep_mod$isHappy() && ((IMixinSheep) partner).isHappy()) {
       // 両親がHappyな羊であれば子もHappyな羊になる
       ((IMixinSheep) sheep).setHappy(true);
